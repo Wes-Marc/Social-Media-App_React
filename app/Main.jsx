@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Axios from "axios";
+Axios.defaults.baseURL = "http://localhost:8080";
 
 // Components
 import ReactDOM from "react-dom/client";
