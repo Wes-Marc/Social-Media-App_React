@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
+import ReactMarkdown from "react-markdown";
 import Axios from "axios";
 import Page from "./Page";
 import LoadingDotsIcon from "./LoadingDotsIcon";
@@ -59,7 +60,9 @@ function ViewSinglePost() {
                 Posted by <Link to={`/profile/${post.author.username}`}>{post.author.username}</Link> on {dateFormatted}
             </p>
 
-            <div className="body-content">{post.body}</div>
+            <div className="body-content">
+                <ReactMarkdown children={post.body} allowedElements={["p", "br", "strong", "em", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li"]} />
+            </div>
         </Page>
     );
 }
