@@ -5,6 +5,7 @@ import { Tooltip } from "react-tooltip";
 import Axios from "axios";
 import Page from "./Page";
 import LoadingDotsIcon from "./LoadingDotsIcon";
+import NotFound from "./NotFound";
 
 function ViewSinglePost() {
     const { id } = useParams();
@@ -29,6 +30,10 @@ function ViewSinglePost() {
             requestController.abort();
         };
     }, []);
+
+    if (!isLoading && !post) {
+        return <NotFound />;
+    }
 
     if (isLoading)
         return (
