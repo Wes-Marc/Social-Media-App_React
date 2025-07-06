@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router";
+import React, { useEffect, useState, useContext } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { Tooltip } from "react-tooltip";
 import Axios from "axios";
 import Page from "./Page";
 import LoadingDotsIcon from "./LoadingDotsIcon";
 import NotFound from "./NotFound";
+import StateContext from "../StateContext";
+import DispatchContext from "../DispatchContext";
 
 function ViewSinglePost() {
+    const navigate = useNavigate();
+    const appState = useContext(StateContext);
+    const appDispatch = useContext(DispatchContext);
     const { id } = useParams();
     const [isLoading, setIsLoading] = useState(true);
     const [post, setPost] = useState();
@@ -45,20 +50,45 @@ function ViewSinglePost() {
     const date = new Date(post.createdDate);
     const dateFormatted = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 
+    function isOwner() {
+        if (appState.loggedIn) {
+            return appState.user.username == post.author.username;
+        }
+        return false;
+    }
+
+    async function deleteHandler() {
+        const areYouSure = window.confirm("Do you really want to delete this post?");
+        if (areYouSure) {
+            try {
+                const response = await Axios.delete(`/post/${id}`, { data: { token: appState.user.token } });
+                if (response.data == "Success") {
+                    appDispatch({ type: "flashMessage", value: "Post was successfully deleted." });
+                    // Redirect to profile page
+                    navigate(`/profile/${appState.user.username}`);
+                }
+            } catch (error) {
+                console.log(error.response.data);
+            }
+        }
+    }
+
     return (
         <Page title={post.title}>
             <div className="d-flex justify-content-between">
                 <h2>{post.title}</h2>
-                <span className="pt-2">
-                    <Link to={`/post/${post._id}/edit`} data-tooltip-content="Edit" data-tooltip-id="edit" className="text-primary mr-2">
-                        <i className="fas fa-edit"></i>
-                    </Link>
-                    <Tooltip id="edit" className="custom-tooltip" />{" "}
-                    <a data-tooltip-content="Delete" data-tooltip-id="delete" className="delete-post-button text-danger">
-                        <i className="fas fa-trash"></i>
-                    </a>
-                    <Tooltip id="delete" className="custom-tooltip" />
-                </span>
+                {isOwner() && (
+                    <span className="pt-2">
+                        <Link to={`/post/${post._id}/edit`} data-tooltip-content="Edit" data-tooltip-id="edit" className="text-primary mr-2">
+                            <i className="fas fa-edit"></i>
+                        </Link>
+                        <Tooltip id="edit" className="custom-tooltip" />{" "}
+                        <a onClick={deleteHandler} data-tooltip-content="Delete" data-tooltip-id="delete" className="delete-post-button text-danger">
+                            <i className="fas fa-trash"></i>
+                        </a>
+                        <Tooltip id="delete" className="custom-tooltip" />
+                    </span>
+                )}
             </div>
 
             <p className="text-muted small mb-4">
