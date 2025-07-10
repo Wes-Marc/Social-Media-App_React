@@ -34,7 +34,7 @@ function ViewSinglePost() {
         return () => {
             requestController.abort();
         };
-    }, []);
+    }, [id]);
 
     if (!isLoading && !post) {
         return <NotFound />;
