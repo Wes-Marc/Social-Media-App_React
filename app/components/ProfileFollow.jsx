@@ -3,15 +3,17 @@ import Axios from "axios";
 import { useParams, Link } from "react-router";
 import LoadingDotsIcon from "./LoadingDotsIcon";
 
-function ProfileFollowers() {
+function ProfileFollow(props) {
     const { username } = useParams();
     const [isLoading, setIsLoading] = useState(true);
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
+        const requestController = new AbortController();
+
         async function fetchPosts() {
             try {
-                const response = await Axios.get(`/profile/${username}/followers`);
+                const response = await Axios.get(`/profile/${username}/${props.action}`, { signal: requestController.signal });
                 setPosts(response.data);
                 setIsLoading(false);
             } catch (error) {
@@ -19,7 +21,11 @@ function ProfileFollowers() {
             }
         }
         fetchPosts();
-    }, [username]);
+
+        return () => {
+            requestController.abort();
+        };
+    }, [username, props.action]);
 
     if (isLoading) return <LoadingDotsIcon />;
 
@@ -36,4 +42,4 @@ function ProfileFollowers() {
     );
 }
 
-export default ProfileFollowers;
+export default ProfileFollow;
