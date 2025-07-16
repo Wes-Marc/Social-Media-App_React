@@ -5,7 +5,8 @@ import { useParams, NavLink, Routes, Route } from "react-router-dom";
 import StateContext from "../StateContext";
 import Page from "./Page";
 import ProfilePosts from "./ProfilePosts";
-import ProfileFollow from "./ProfileFollow";
+import ProfileFollowers from "./ProfileFollowers";
+import ProfileFollowing from "./ProfileFollowing";
 
 function Profile() {
     const appState = useContext(StateContext);
@@ -147,8 +148,8 @@ function Profile() {
 
             <Routes>
                 <Route path="" element={<ProfilePosts />} />
-                <Route path="followers" element={<ProfileFollow action="followers" />} />
-                <Route path="following" element={<ProfileFollow action="following" />} />
+                <Route path="followers" element={<ProfileFollowers />} />
+                <Route path="following" element={<ProfileFollowing />} />
             </Routes>
         </Page>
     );
