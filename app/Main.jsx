@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect, useRef } from "react";
+import React, { useState, useReducer, useEffect, useRef, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useImmerReducer } from "use-immer";
 import { CSSTransition } from "react-transition-group";
@@ -16,14 +16,15 @@ import HomeGuest from "./components/HomeGuest";
 import About from "./components/About";
 import Terms from "./components/Terms";
 import Footer from "./components/Footer";
-import CreatePost from "./components/CreatePost";
-import ViewSinglePost from "./components/ViewSinglePost";
+const CreatePost = React.lazy(() => import("./components/CreatePost"));
+const ViewSinglePost = React.lazy(() => import("./components/ViewSinglePost"));
 import FlashMessages from "./components/FlashMessages";
 import Profile from "./components/Profile";
 import EditPost from "./components/EditPost";
 import NotFound from "./components/NotFound";
-import Search from "./components/Search";
-import Chat from "./components/Chat";
+const Search = React.lazy(() => import("./components/Search"));
+const Chat = React.lazy(() => import("./components/Chat"));
+import LoadingDotsIcon from "./components/LoadingDotsIcon";
 
 function Main() {
     const searchRef = useRef(null);
@@ -121,9 +122,23 @@ function Main() {
                     <Routes>
                         <Route path="/" element={state.loggedIn ? <Home /> : <HomeGuest />} />
                         <Route path="/profile/:username/*" element={<Profile />} />
-                        <Route path="/post/:id" element={<ViewSinglePost />} />
+                        <Route
+                            path="/post/:id"
+                            element={
+                                <Suspense fallback={<LoadingDotsIcon />}>
+                                    <ViewSinglePost />
+                                </Suspense>
+                            }
+                        />
                         <Route path="/post/:id/edit" element={<EditPost />} />
-                        <Route path="/create-post" element={<CreatePost />} />
+                        <Route
+                            path="/create-post"
+                            element={
+                                <Suspense fallback={<LoadingDotsIcon />}>
+                                    <CreatePost />
+                                </Suspense>
+                            }
+                        />
                         <Route path="/about-us" element={<About />} />
                         <Route path="/terms" element={<Terms />} />
                         <Route path="*" element={<NotFound />} />
@@ -133,7 +148,7 @@ function Main() {
                             <Search />
                         </div>
                     </CSSTransition>
-                    <Chat />
+                    {state.loggedIn && <Chat />}
                     <Footer />
                 </BrowserRouter>
             </DispatchContext.Provider>
