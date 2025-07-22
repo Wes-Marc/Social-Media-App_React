@@ -88,6 +88,30 @@ function Main() {
         }
     }, [state.loggedIn]);
 
+    // Axios request to check if token expired
+    useEffect(() => {
+        if (state.loggedIn) {
+            const requestController = new AbortController();
+
+            async function fetchResults() {
+                try {
+                    const response = await Axios.post("/checkToken", { token: state.user.token }, { signal: requestController.signal });
+                    if (!response.data) {
+                        dispatch({ type: "logout" });
+                        dispatch({ type: "flashMessage", value: "Your session has expired. Please log in again." });
+                    }
+                } catch (error) {
+                    console.log(error.response.data);
+                }
+            }
+            fetchResults();
+
+            return () => {
+                requestController.abort();
+            };
+        }
+    }, []);
+
     return (
         <StateContext.Provider value={state}>
             <DispatchContext.Provider value={dispatch}>
