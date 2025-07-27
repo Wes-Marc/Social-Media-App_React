@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useImmerReducer } from "use-immer";
 import { CSSTransition } from "react-transition-group";
 import Axios from "axios";
-Axios.defaults.baseURL = process.env.BACKENDURL || "";
+Axios.defaults.baseURL = process.env.BACKENDURL || "https://vertext-backend.onrender.com";
 
 import StateContext from "./StateContext";
 import DispatchContext from "./DispatchContext";
@@ -30,12 +30,12 @@ function Main() {
     const searchRef = useRef(null);
 
     const initialState = {
-        loggedIn: Boolean(localStorage.getItem("complexappToken")),
+        loggedIn: Boolean(localStorage.getItem("vertextToken")),
         flashMessages: [],
         user: {
-            token: localStorage.getItem("complexappToken"),
-            username: localStorage.getItem("complexappUsername"),
-            avatar: localStorage.getItem("complexappAvatar")
+            token: localStorage.getItem("vertextToken"),
+            username: localStorage.getItem("vertextUsername"),
+            avatar: localStorage.getItem("vertextAvatar")
         },
         isSearchOpen: false,
         isChatOpen: false,
@@ -79,13 +79,13 @@ function Main() {
 
     useEffect(() => {
         if (state.loggedIn) {
-            localStorage.setItem("complexappToken", state.user.token);
-            localStorage.setItem("complexappUsername", state.user.username);
-            localStorage.setItem("complexappAvatar", state.user.avatar);
+            localStorage.setItem("vertextToken", state.user.token);
+            localStorage.setItem("vertextUsername", state.user.username);
+            localStorage.setItem("vertextAvatar", state.user.avatar);
         } else {
-            localStorage.removeItem("complexappToken");
-            localStorage.removeItem("complexappUsername");
-            localStorage.removeItem("complexappAvatar");
+            localStorage.removeItem("vertextToken");
+            localStorage.removeItem("vertextUsername");
+            localStorage.removeItem("vertextAvatar");
         }
     }, [state.loggedIn]);
 

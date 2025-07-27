@@ -34,7 +34,7 @@ function Chat() {
 
     // Makes front-end listen to an event sent from the server
     useEffect(() => {
-        socket.current = io("http://localhost:8080");
+        socket.current = io(process.env.BACKENDURL || "https://vertext-backend.onrender.com");
         socket.current.on("chatFromServer", message => {
             setState(draft => {
                 draft.chatMessages.push(message);
