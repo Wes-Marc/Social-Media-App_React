@@ -7,6 +7,8 @@ import Page from "./Page";
 import ProfilePosts from "./ProfilePosts";
 import ProfileFollowers from "./ProfileFollowers";
 import ProfileFollowing from "./ProfileFollowing";
+import NotFound from "./NotFound";
+import LoadingDotsIcon from "./LoadingDotsIcon";
 
 function Profile() {
     const appState = useContext(StateContext);
@@ -24,7 +26,9 @@ function Profile() {
                 followerCount: "",
                 followingCount: ""
             }
-        }
+        },
+        isFetching: false,
+        notFound: false
     });
 
     // Loads Profile Data
@@ -32,11 +36,23 @@ function Profile() {
         const requestController = new AbortController();
 
         async function fetchData() {
+            setState(draft => {
+                draft.isFetching = true;
+            });
+
             try {
                 const response = await Axios.post(`/profile/${username}`, { token: appState.user.token }, { signal: requestController.signal });
-                setState(draft => {
-                    draft.profileData = response.data;
-                });
+                if (response.data) {
+                    setState(draft => {
+                        draft.profileData = response.data;
+                        draft.isFetching = false;
+                    });
+                } else {
+                    setState(draft => {
+                        draft.notFound = true;
+                        draft.isFetching = false;
+                    });
+                }
             } catch (error) {
                 console.log(error.response.data);
             }
@@ -116,6 +132,18 @@ function Profile() {
         setState(draft => {
             draft.stopFollowingRequestCount++;
         });
+    }
+
+    if (state.notFound) {
+        return <NotFound />;
+    }
+
+    if (state.isFetching) {
+        return (
+            <Page title="...">
+                <LoadingDotsIcon />
+            </Page>
+        );
     }
 
     return (

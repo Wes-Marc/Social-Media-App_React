@@ -137,12 +137,13 @@ function EditPost() {
         return <NotFound />;
     }
 
-    if (state.isFetching)
+    if (state.isFetching) {
         return (
             <Page title="...">
                 <LoadingDotsIcon />
             </Page>
         );
+    }
 
     return (
         <Page title="Edit Post">
